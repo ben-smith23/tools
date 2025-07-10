@@ -13,10 +13,20 @@ class UCE:
                 ext = os.path.splitext(path)[1].lower()
                 if ext not in self.fmts:
                     raise ValueError(f"Unsupported format: {ext}")
-                df = pd.read_csv(path) if ext == '.csv' else pd.read_excel(path, sheet_name=sheet)
+                
+                # Read file
+                if ext == '.csv':
+                    df = pd.read_csv(path)
+                else:
+                    # Use first sheet if sheet=None
+                    df = pd.read_excel(path, sheet_name=sheet or 0)
+                
+                # Check column
                 if col not in df.columns:
                     raise ValueError(f"'{col}' not in columns: {df.columns.tolist()}")
+                
                 return sorted(df[col].dropna().unique())
+        
         raise FileNotFoundError(f"File not found in: {paths}")
 
 def print_uniques(fname, col, sheet=None):
